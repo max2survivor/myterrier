@@ -68,7 +68,7 @@ public class TRECQueryFeatureVector {
    */
   public TRECQueryFeatureVector(Index _index) throws IOException {
     this(_index, ApplicationSetup.getProperty("trec.topics", ""),
-        ApplicationSetup.getProperty("features.class", ""));
+        ApplicationSetup.getProperty("features.file", ""));
   }
   
   /**
@@ -80,7 +80,7 @@ public class TRECQueryFeatureVector {
    */
   public TRECQueryFeatureVector(Index _index, String _filename)
       throws IOException {
-    this(_index, _filename, ApplicationSetup.getProperty("features.class", ""));
+    this(_index, _filename, ApplicationSetup.getProperty("features.file", ""));
   }
   
   /**
@@ -92,11 +92,10 @@ public class TRECQueryFeatureVector {
    * @throws IOException
    */
   public TRECQueryFeatureVector(Index _index, String _filename,
-      String _featureList) throws IOException {
-    
+      String _featureFile) throws IOException {
     this.index = _index;
     this.collStats = _index.getCollectionStatistics();
-    this.initFeatureList(_featureList);
+    this.initFeatureList(_featureFile);
     
     this.filename = _filename;
     queryingManager = new Manager(index);
@@ -142,37 +141,44 @@ public class TRECQueryFeatureVector {
     reader = Files.openFileReader(filename);
   }
   
-  protected void initFeatureList(String _featureList) {
+  protected void initFeatureList(String _featureFile) {
     featureList = new ArrayList<Feature>();
-    for (String featureClass : _featureList.split(",")) {
-      try {
+    BufferedReader featureFileReader;
+    String featureClass = null;
+    try {
+      featureFileReader = Files.openFileReader(_featureFile);
+      while ((featureClass = featureFileReader.readLine()) != null) {
+        if (featureClass.startsWith("#")) continue;
         Feature ft = Class.forName(featureClass).asSubclass(Feature.class)
             .getConstructor(Index.class).newInstance(index);
         
         featureList.add(ft);
         if (ft.SPECIAL_INPUTS) handleSpecialInputs(ft);
-      } catch (InstantiationException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (ClassNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (IllegalArgumentException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (SecurityException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (NoSuchMethodException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
       }
+    } catch (InstantiationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (SecurityException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     
   }
@@ -214,7 +220,7 @@ public class TRECQueryFeatureVector {
     for (int i = 0; i < featureList.size(); i++) {
       
       featureList.get(i).setUp(terms);
-      vec.add(featureList.get(i).computeValue());
+      vec.addAll(featureList.get(i).computeValue());
     }
     return vec;
   }

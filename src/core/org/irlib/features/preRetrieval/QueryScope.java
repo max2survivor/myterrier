@@ -1,13 +1,20 @@
 /**
  * 
  */
-package org.irlib.features.queryPerformance;
+package org.irlib.features.preRetrieval;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.irlib.features.Feature;
 import org.terrier.matching.MatchingQueryTerms;
 import org.terrier.matching.models.Idf;
 import org.terrier.structures.Index;
-import org.terrier.utility.StaTools;
+import org.terrier.structures.LexiconEntry;
+
+import com.google.common.collect.Sets;
+import com.google.common.primitives.Ints;
 
 /**
  * @author semanticpc
@@ -32,19 +39,27 @@ public class QueryScope extends Feature {
    * @see org.irlib.features.Feature#computeValue()
    */
   @Override
-  public double computeValue() {
-    
-    double[] idfVals = new double[terms.length()];
-    int i = -1;
+  public Collection<? extends Double> computeValue() {
+    outputFeatures.removeAllElements();
+    boolean first = true;
+    Set<Integer> unionSet = null;
     for (String term : terms.getTerms()) {
       if (index.getLexicon().getLexiconEntry(term) != null) {
-        double df = index.getLexicon().getLexiconEntry(term)
-            .getDocumentFrequency();
-        idfVals[++i] = computeIDF.idfENQUIRY(df);
+        LexiconEntry le = index.getLexicon().getLexiconEntry(term);
+        int[] docidlist = index.getInvertedIndex().getDocuments(le)[0];
+        Set<Integer> termDocList = new HashSet<Integer>(Ints.asList(docidlist));
+        if (first) {
+          unionSet = termDocList;
+          first = false;
+        } else unionSet = Sets.union(unionSet, termDocList);
         
-      } else idfVals[++i] = 0;
+      }
     }
-    return (Math.log(StaTools.min(idfVals) / numberOfDocuments) * -1);
+    double nq = 0;
+    if (unionSet != null) nq = unionSet.size();
+    
+    outputFeatures.add(-1 * Math.log(nq / numberOfDocuments));
+    return outputFeatures;
     
   }
   

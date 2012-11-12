@@ -1,7 +1,9 @@
 /**
  * 
  */
-package org.irlib.features.queryPerformance;
+package org.irlib.features.preRetrieval;
+
+import java.util.Collection;
 
 import org.irlib.features.Feature;
 import org.terrier.matching.MatchingQueryTerms;
@@ -11,13 +13,14 @@ import org.terrier.structures.Index;
  * @author semanticpc
  * 
  */
-public class NumberOfTokens extends Feature {
+public class QueryEntityCount extends Feature {
   
-  MatchingQueryTerms terms;
-  
-  public NumberOfTokens(Index _index) {
+  /**
+   * @param _index
+   */
+  public QueryEntityCount(Index _index) {
     super(_index);
-    SPECIAL_INPUTS = false;
+    // TODO Auto-generated constructor stub
   }
   
   /*
@@ -26,8 +29,9 @@ public class NumberOfTokens extends Feature {
    * @see org.irlib.features.Feature#computeValue()
    */
   @Override
-  public double computeValue() {
-    return terms.length();
+  public Collection<? extends Double> computeValue() {
+    // TODO Auto-generated method stub
+    return null;
   }
   
   /*
@@ -38,7 +42,8 @@ public class NumberOfTokens extends Feature {
    */
   @Override
   public void setUp(int[] _docids, MatchingQueryTerms _terms) {
-    terms = _terms;
+    // TODO Auto-generated method stub
+    
   }
   
 }

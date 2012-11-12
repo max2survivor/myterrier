@@ -1,8 +1,9 @@
 /**
  * 
  */
-package org.irlib.features.queryPerformance;
+package org.irlib.features.preRetrieval;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.irlib.features.Feature;
@@ -34,9 +35,10 @@ public class SimplifiedQueryClarity extends Feature {
    * @see org.irlib.features.Feature#computeValue()
    */
   @Override
-  public double computeValue() {
-    int queryLength = terms.length();
+  public Collection<? extends Double> computeValue() {
+    outputFeatures.removeAllElements();
     
+    int queryLength = terms.length();
     HashMap<String,Integer> uniqueTerms = new HashMap<String,Integer>();
     for (String term : terms.getTerms()) {
       if (!uniqueTerms.containsKey(term)) uniqueTerms.put(term, 1);
@@ -48,14 +50,17 @@ public class SimplifiedQueryClarity extends Feature {
     for (String term : uniqueTerms.keySet()) {
       double Pml = (double) uniqueTerms.get(term) / (double) queryLength;
       double Pcoll = 0;
-      if (index.getLexicon().getLexiconEntry(term) != null) Pcoll = (double) index
-          .getLexicon().getLexiconEntry(term).getFrequency()
-          / (double) totalNumberOfTokens;
-      else Pcoll = 0.1 / totalNumberOfTokens;
+      if (index.getLexicon().getLexiconEntry(term) != null) {
+        Pcoll = (double) index.getLexicon().getLexiconEntry(term)
+            .getFrequency()
+            / (double) totalNumberOfTokens;
+        vals[++i] = Pml * (Math.log(Pml / Pcoll) / Math.log(2));
+      } else vals[++i] = 0;
       
-      vals[++i] = Pml * (Math.log(Pml / Pcoll) / Math.log(2));
     }
-    return StaTools.sum(vals);
+    
+    outputFeatures.add(StaTools.sum(vals));
+    return outputFeatures;
     
   }
   

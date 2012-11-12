@@ -3,6 +3,9 @@
  */
 package org.irlib.features;
 
+import java.util.Collection;
+import java.util.Vector;
+
 import org.terrier.matching.MatchingQueryTerms;
 import org.terrier.structures.Index;
 
@@ -11,11 +14,13 @@ import org.terrier.structures.Index;
  * 
  */
 public abstract class Feature {
-  protected boolean SPECIAL_INPUTS = false;
+  public boolean SPECIAL_INPUTS = false;
+  protected Vector<Double> outputFeatures;
   protected Index index;
   
   public Feature(Index _index) {
     index = _index;
+    outputFeatures = new Vector<Double>();
   }
   
   /**
@@ -25,7 +30,7 @@ public abstract class Feature {
    * 
    * @return
    */
-  public abstract double computeValue();
+  public abstract Collection<? extends Double> computeValue();
   
   public void setUp(MatchingQueryTerms _terms) {
     setUp(null, _terms);

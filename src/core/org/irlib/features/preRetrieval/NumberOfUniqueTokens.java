@@ -1,8 +1,9 @@
 /**
  * 
  */
-package org.irlib.features.queryPerformance;
+package org.irlib.features.preRetrieval;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.irlib.features.Feature;
@@ -28,13 +29,15 @@ public class NumberOfUniqueTokens extends Feature {
    * @see org.irlib.features.Feature#computeValue()
    */
   @Override
-  public double computeValue() {
+  public Collection<? extends Double> computeValue() {
+    outputFeatures.removeAllElements();
     HashMap<String,Integer> uniqueTerms = new HashMap<String,Integer>();
     for (String term : terms.getTerms()) {
       if (!uniqueTerms.containsKey(term)) uniqueTerms.put(term, 1);
       else uniqueTerms.put(term, uniqueTerms.get(term) + 1);
     }
-    return uniqueTerms.size();
+    outputFeatures.add((double) uniqueTerms.size());
+    return outputFeatures;
   }
   
   /*

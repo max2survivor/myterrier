@@ -1,7 +1,9 @@
 /**
  * 
  */
-package org.irlib.features.queryPerformance;
+package org.irlib.features.preRetrieval;
+
+import java.util.Collection;
 
 import org.irlib.features.Feature;
 import org.terrier.matching.MatchingQueryTerms;
@@ -13,12 +15,12 @@ import org.terrier.utility.StaTools;
  * @author semanticpc
  * 
  */
-public class IDFStdDev extends Feature {
+public class IDFRelated extends Feature {
   
   Idf computeIDF;
   MatchingQueryTerms terms;
   
-  public IDFStdDev(Index _index) {
+  public IDFRelated(Index _index) {
     super(_index);
     SPECIAL_INPUTS = false;
     computeIDF = new Idf(index.getCollectionStatistics().getNumberOfDocuments());
@@ -30,19 +32,28 @@ public class IDFStdDev extends Feature {
    * @see org.irlib.features.Feature#computeValue()
    */
   @Override
-  public double computeValue() {
-    
+  public Collection<? extends Double> computeValue() {
+    outputFeatures.removeAllElements();
     double[] idfVals = new double[terms.length()];
     int i = -1;
     for (String term : terms.getTerms()) {
       if (index.getLexicon().getLexiconEntry(term) != null) {
         double df = index.getLexicon().getLexiconEntry(term)
             .getDocumentFrequency();
-        idfVals[++i] = computeIDF.idfENQUIRY(df);
+        idfVals[++i] = computeIDF.idfNENQUIRY(df);
         
       } else idfVals[++i] = 0;
     }
-    return StaTools.standardDeviation(idfVals);
+    
+    // Gamma2 = MaxIDF / MinIDF
+    if (StaTools.min(idfVals) == 0) outputFeatures.add(0d);
+    else outputFeatures.add(StaTools.max(idfVals) / StaTools.min(idfVals));
+    // MaxIDF
+    outputFeatures.add(StaTools.max(idfVals));
+    
+    // DevIDF
+    outputFeatures.add(StaTools.standardDeviation(idfVals));
+    return outputFeatures;
     
   }
   

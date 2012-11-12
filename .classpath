@@ -50,5 +50,10 @@
 	<classpathentry kind="lib" path="/Users/semanticpc/Documents/Dropbox/workspace/terrier/lib/trove-2.0.2.jar"/>
 	<classpathentry kind="lib" path="/Users/semanticpc/Documents/Dropbox/workspace/terrier/lib/winfileopen.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/semanticpc/Documents/Dropbox/workspace/terrier/lib/boilerpipe-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/Users/semanticpc/Documents/Dropbox/workspace/terrier/lib/nekohtml-1.9.15.jar"/>
+	<classpathentry kind="lib" path="/Users/semanticpc/Documents/Dropbox/workspace/terrier/lib/xercesImpl-2.9.1.jar"/>
+	<classpathentry kind="lib" path="/Users/semanticpc/Documents/Dropbox/workspace/terrier/lib/LBJ2Library.jar"/>
+	<classpathentry kind="lib" path="/Users/semanticpc/Documents/Dropbox/workspace/terrier/lib/guava-r09.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

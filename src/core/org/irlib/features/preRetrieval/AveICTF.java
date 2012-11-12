@@ -1,7 +1,9 @@
 /**
  * 
  */
-package org.irlib.features.queryPerformance;
+package org.irlib.features.preRetrieval;
+
+import java.util.Collection;
 
 import org.irlib.features.Feature;
 import org.terrier.matching.MatchingQueryTerms;
@@ -28,7 +30,8 @@ public class AveICTF extends Feature {
    * @see org.irlib.features.Feature#computeValue()
    */
   @Override
-  public double computeValue() {
+  public Collection<? extends Double> computeValue() {
+    outputFeatures.removeAllElements();
     double ctf = 1;
     for (String term : terms.getTerms()) {
       if (index.getLexicon().getLexiconEntry(term) != null) ctf *= (double) index
@@ -36,7 +39,8 @@ public class AveICTF extends Feature {
           / (double) totalNumberOfTokens;
     }
     
-    return (Math.log(ctf) / Math.log(2)) / terms.length();
+    outputFeatures.add((Math.log(ctf) / Math.log(2)) / terms.length());
+    return outputFeatures;
   }
   
   /*

@@ -1,7 +1,9 @@
 /**
  * 
  */
-package org.irlib.features.queryPerformance;
+package org.irlib.features.preRetrieval;
+
+import java.util.Collection;
 
 import org.irlib.features.Feature;
 import org.terrier.matching.MatchingQueryTerms;
@@ -30,19 +32,20 @@ public class AveIDF extends Feature {
    * @see org.irlib.features.Feature#computeValue()
    */
   @Override
-  public double computeValue() {
-    
+  public Collection<? extends Double> computeValue() {
+    outputFeatures.removeAllElements();
     double[] idfVals = new double[terms.length()];
     int i = -1;
     for (String term : terms.getTerms()) {
       if (index.getLexicon().getLexiconEntry(term) != null) {
-        double df = index.getLexicon().getLexiconEntry(term)
+        int df = index.getLexicon().getLexiconEntry(term)
             .getDocumentFrequency();
-        idfVals[++i] = computeIDF.idfENQUIRY(df);
+        idfVals[++i] = computeIDF.idfNENQUIRY(df);
         
       } else idfVals[++i] = 0;
     }
-    return StaTools.mean(idfVals);
+    outputFeatures.add(StaTools.mean(idfVals));
+    return outputFeatures;
     
   }
   
